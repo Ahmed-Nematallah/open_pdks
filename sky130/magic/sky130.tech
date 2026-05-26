@@ -6907,7 +6907,8 @@ plot
      draw nwell cwell
 
   style postscript
-    # --- Stipple Pattern Matrices (16*16 pixels) ---
+
+    # --- Stipple Pattern Matrices (8 words x 32-bits, 16*16 bitmap) ---
      1 30003000 00000000 03C003C0 00000000 03C003C0 00000000 00000000 00000000
      2 F0F0F0F0 F0F0F0F0 00000000 00000000 0F0F0F0F 0F0F0F0F 00000000 00000000
      3 FCFCFCFC 3F3F3F3F CFCFCFCF F3F3F3F3 FCFCFCFC 3F3F3F3F CFCFCFCF F3F3F3F3
@@ -7016,37 +7017,59 @@ plot
     68      0    0    0    255
 
     # --- PDK Layer Style Remappings ---
+    fence                                    11   2
     magnet                                   8    5
     obsactive                                12   5
     error_p,error_s,error_ps                 12   4
     pdiffres,mvpdiffres                      4    21
     ndiffres,mvndiffres                      3    22
     mrp1,xhrpoly,uhrpoly                     2    S
+    glass                                    14   10
+    #ifdef REDISTRIBUTION
     pi2                                      31   29
-    ubm,pi2,glass                            14   10
+    ubm,pi2                                  14   10
+    mrdlc                                    26   7
+    mrdlc,metalrdl,obsmrdl,pi2               18   5
     mrdlc                                    26   28
-    via4,metal5,m5fill,rm5,obsm5,mrdlc       26   7
-    via4,fence                               11   2
+    #endif
+    #ifdef METAL5
+    via4,metal5,m5fill,rm5,obsm5             26   7
+    via4                                     11   2
+    rm4,rm5                                  4    7
+    via3                                     13   21
     via3,metal4,m4fill,rm4,obsm4,via4        24   22
     via3                                     15   5
+    #endif
+    #ifdef METAL5
+    #ifdef MIM
+    mimcap2,mim2cc                           13   21
+    mimcc,mim2cc                             15   X
+    mimcap,mimcc                             33   5
     mimcap,mimcc,mimcap2,mim2cc              13   12
-    m3c,metal3,m3fill,rm3,obsm3,mimcap2,mim2cc,via3 13   21
+    #endif
+    #endif
+    m3c,metal3,m3fill,rm3,obsm3              13   21
     m3c,rotate                               7    2
+    #ifdef RERAM
+    reram                                    11   12
+    reram                                    33   5
     reram                                    15   19
-    m2c,reram,metal2,m2fill,rm2,obsm2,m3c,mimcap,mimcc 33   5
+    reram                                    15   X
+    #endif
+    m2c,metal2,m2fill,rm2,obsm2,m3c          33   5
     m2c                                      33   36
-    mcon,obsmcon,metal1,m1fill,rm1,obsm1,m2c,reram 11   12
+    mcon,obsmcon,metal1,m1fill,rm1,obsm1,m2c 11   12
     mcon,obsmcon                             23   35
-    ppolyres,xpc,rmp,pdiode,pdiodec,pdiodelvt,pdiodehvt,pdilvtc,pdihvtc,mvpdiode,mvpdiodec,rli,rm1,rm2,rm3,rm4,rm5,mrp1 4    7
+    ppolyres,xpc,rmp,pdiode,pdiodec,pdiodelvt,pdiodehvt,pdilvtc,pdihvtc,mvpdiode,mvpdiodec,rli,rm1,rm2,rm3,mrp1 4    7
     npolyres,ppolyres,xhrpoly                22   7
     npolyres,ndiode,ndiodec,nndiode,ndiodelvt,ndilvtc,mvndiode,mvndiodec,nndiodec 3    5
     extdrain                                 3    15
     extdrain                                 4    1
     mvpdiff,mvpsd,mvpdc,mvpsc,mvpdiode,mvpdiodec,mvpdiffres 8    21
     mvndiff,mvnsd,mvnfet,mvnfetesd,mvnnfet,mvvar,mvndc,mvnsc,mvndiode,mvndiodec,nndiodec,mvndiffres 6    22
-    pfetmvt,nsonos,nndiode,mrdlc,metalrdl,obsmrdl,pi2 18   5
+    pfetmvt,nsonos,nndiode                   18   5
     ndc,pdc,nsc,psc,mvndc,mvpdc,mvnsc,mvpsc,pc,xpc,pdiodec,ndiodec,pdilvtc,pdihvtc,ndilvtc,mvpdiodec,mvndiodec,nndiodec,locali,lifill,coreli,rli,mcon,obsli,obsmcon 9    16
-    ndc,pdc,nsc,psc,mvndc,mvpdc,mvnsc,mvpsc,pc,xpc,pdiodec,ndiodec,pdilvtc,pdihvtc,ndilvtc,mvpdiodec,mvndiodec,nndiodec,reram,mimcc,mim2cc 15   X
+    ndc,pdc,nsc,psc,mvndc,mvpdc,mvnsc,mvpsc,pc,xpc,pdiodec,ndiodec,pdilvtc,pdihvtc,ndilvtc,mvpdiodec,mvndiodec,nndiodec 15   X
     var,corenvar,corepvar,varhvt,mvvar,poly,polyfill,pc,npolyres,ppolyres,xpc,rmp 2    14
     scpfethvt,pfethvt,varhvt,pdiodehvt,pdihvtc 28   5
     pfet,scpfet,scpfethvt,ppu,pfetlvt,pfetmvt,pfethvt,mvpfet,mvpfetesd 6    14
@@ -7057,8 +7080,8 @@ plot
     nsd,var,nsc,corenvar,varhvt,nnfet,mvnsd,mvnnfet,mvvar,mvnsc,nndiodec 3    13
     pdiff,pdc,mvpdiff,mvpdc,pdiode,pdiodec,pdiodelvt,pdiodehvt,pdilvtc,pdihvtc,mvpdiode,mvpdiodec,pdiffres,mvpdiffres 4    14
     ndiff,fomfill,ndc,mvndiff,mvndc,ndiode,ndiodec,nndiode,ndiodelvt,ndilvtc,mvndiode,mvndiodec,ndiffres,mvndiffres 3    14
-    pwell,rpwell,rpwell,pfet,scpfet,scpfethvt,ppu,npn,npn,pfetlvt,pfetmvt,pfethvt,mvpfet,mvpfetesd 4    5
-    nwell,photo,photo,pnp                    8    7
+    pwell,rpwell,pfet,scpfet,scpfethvt,ppu,npn,pfetlvt,pfetmvt,pfethvt,mvpfet,mvpfetesd 4    5
+    nwell,photo,pnp                          8    7
     isosub                                   10   B
     dnwell,fillblock,obswell                 7    7
 end
